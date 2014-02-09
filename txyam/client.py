@@ -75,8 +75,14 @@ class YamClient:
         log.msg("Disconnecting from all clients.")
         for factory in self.factories:
             factory.stopTrying()
+
+        r = list()
         for connection in self.getActiveConnections():
-            connection.transport.loseConnection()            
+            d = connection.transport.loseConnection()
+            if d is not None:
+                r.append(d)
+
+        return DeferredList(r)
 
 
     def flushAll(self):
